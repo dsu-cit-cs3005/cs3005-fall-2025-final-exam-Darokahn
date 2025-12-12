@@ -1,0 +1,9 @@
+(struct config) {
+    .displayTypes = 0,
+    .width = 30,
+    .height = 30,
+    .moundCount = 10,
+    .pitCount = 10,
+    .flamethrowerCount = 10,
+    .live = true
+}

